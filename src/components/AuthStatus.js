@@ -1,16 +1,15 @@
 "use client";
 import { useSession, signIn, signOut } from "next-auth/react";
+import React, { useEffect } from "react";
 
 export default function AuthStatus() {
   const { data: session, status } = useSession();
 
-  if (session) {
-    // Print credentials, token, and user info
-    console.log('Session:', session);
-    if (session.accessToken) console.log('Access Token:', session.accessToken);
-    if (session.refreshToken) console.log('Refresh Token:', session.refreshToken);
-    if (session.user) console.log('User Info:', session.user);
-  }
+  useEffect(() => {
+    if(session) {
+      console.log("Session:", session);
+    }
+  }, [session])
 
   if (status === "loading") {
     return <p className="text-zinc-400">Loading...</p>;

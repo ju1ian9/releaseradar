@@ -1,14 +1,50 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 
 export default function FollowedArtistsList({
   query,
   setQuery,
-  searchResults,
   followed,
   follow,
   unfollow,
 }) {
+
+  const [searchResults, setSearchResults] = useState([]);
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    if (!query) {
+      setSearchResults([]);
+      return;
+    }
+    if (!session?.accessToken) return;
+
+    const fetchArtists = async () => {
+      try {
+        const res = await fetch(
+          `https://api.spotify.com/v1/search?q=${encodeURIComponent(
+            query
+          )}&type=artist&limit=5`,
+          {
+            headers: {
+              Authorization: `Bearer ${session.accessToken}`,
+            },
+          }
+        );
+        const data = await res.json();
+        setSearchResults(data.artists?.items || []);
+      } catch (err) {
+        console.error("Spotify search error:", err);
+      }
+    };
+
+    // debounce: wait 300ms after typing
+    const timeout = setTimeout(fetchArtists, 300);
+    return () => clearTimeout(timeout);
+  }, [query, session?.accessToken]);
+
+
   return (
     <aside className="col-span-3 bg-zinc-950/40 border border-zinc-800 rounded-2xl p-4">
       <div className="text-lg font-medium mb-4">Followed Artists</div>

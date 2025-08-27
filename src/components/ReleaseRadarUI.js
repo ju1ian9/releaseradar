@@ -20,13 +20,6 @@ export default function ReleaseRadarUI() {
     [grouped]
   );
 
-  const searchResults = useMemo(() => {
-    if (!query.trim()) return [];
-    return allArtists
-      .filter((a) => a.name.toLowerCase().includes(query.toLowerCase()))
-      .slice(0, 6);
-  }, [query, allArtists]);
-
   function follow(artist) {
     if (followed.find((f) => f.id === artist.id)) return;
     setFollowed((f) => [artist, ...f]);
@@ -52,7 +45,6 @@ export default function ReleaseRadarUI() {
         <FollowedArtistsList
           query={query}
           setQuery={setQuery}
-          searchResults={searchResults}
           followed={followed}
           follow={follow}
           unfollow={unfollow}
